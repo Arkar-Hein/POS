@@ -1,31 +1,27 @@
-version: '2'
+version: '3.4'
   
 services:
     test: 
         build:
             context: .
-            dockerfile: Dockerfile.test
+            target: ospos_test
+        depends_on: 
+          - mysql
+        container_name: ospos_test
+        environment:
+          - CI_ENV=testing
+          - ENCRYPTION_KEY=
+          - MYSQL_HOST_NAME=127.0.0.1
+          - MYSQL_DATABASE=ospos
+          - MYSQL_USERNAME=admin
+          - MYSQL_PASSWORD=pointofsale
+        ports:
+          - "80:80"
 
     sqlscript:
         build:
             context: database/
             dockerfile: Dockerfile
-
-    ospos:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        container_name: ospos
-        restart: always
-        depends_on:
-          - mysql
-        ports:
-          - "80:80"
-        environment:
-          - MYSQL_USERNAME=admin
-          - MYSQL_PASSWORD=pointofsale
-          - MYSQL_DB_NAME=ospos
-          - MYSQL_HOST_NAME=mysql
 
     mysql:
         image: mysql:5.7
